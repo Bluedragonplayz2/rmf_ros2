@@ -58,12 +58,15 @@ void Node::_adapter_lift_request_update(LiftRequest::UniquePtr msg)
     "[%s] Received adapter lift request to [%s] with request type [%d]",
     msg->session_id.c_str(), msg->destination_floor.c_str(), msg->request_type
   );
-  auto& curr_request = _active_sessions.insert(
+  auto& active_request = _active_sessions.insert(
     std::make_pair(msg->lift_name, nullptr)).first->second;
 
-  if (curr_request)
+  auto& current_request = _queue_sessions.insert(
+    std::make_pair(msg->lift_name, nullptr)).first->second;
+
+  if (active_request)
   {
-    if (curr_request->session_id == msg->session_id)
+    if (active_request->session_id == msg->session_id)
     {
       if (msg->request_type != LiftRequest::REQUEST_END_SESSION)
         curr_request = std::move(msg);
@@ -77,7 +80,12 @@ void Node::_adapter_lift_request_update(LiftRequest::UniquePtr msg)
           msg->session_id.c_str()
         );
         curr_request = nullptr;
+        // get next request
       }
+    }
+    else
+    {
+      // add to queue
     }
   }
   else

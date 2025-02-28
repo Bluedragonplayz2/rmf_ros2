@@ -54,6 +54,9 @@ private:
   void _lift_state_update(LiftState::UniquePtr msg);
 
   std::unordered_map<std::string, LiftRequest::UniquePtr> _active_sessions;
+  std::unordered_map<std::string, std::list<std::pair<std::int16_t, LiftRequest::UniquePtr>> _queue_sessions;
+  //                  lift_name                     destination_level
+
 };
 
 } // namespace lift_supervisor
